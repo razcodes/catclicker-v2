@@ -1,4 +1,4 @@
-## Cat Clicker v1
+## Cat Clicker v2
 MVC version of the cat clicker.
 
 ## Instruction
