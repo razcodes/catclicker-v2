@@ -1,101 +1,113 @@
-// Global variables
-let CAT_AMOUNT = 7;
-const menu = document.getElementById("menu");
-const container = document.getElementById("container");
-
 var model = {
-	// Create a singal cat object
-	createCat: function(catNum) {
-		return newCat = {
-			url: `img/cat${catNum}.jpg`,
-			number: catNum,
-			clicks: 0
+	currentCat: null,
+	cats: [
+		{
+			name: "George",
+			url: "img/cat1.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Michael",
+			url: "img/cat2.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Fredrik",
+			url: "img/cat3.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Frank",
+			url: "img/cat4.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Simon",
+			url: "img/cat5.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Caroline",
+			url: "img/cat6.jpg",
+			clickCount: 0
+		},
+		{
+			name: "Shay",
+			url: "img/cat7.jpg",
+			clickCount: 0
 		}
-	},
-	// Create an array of cat objects
-	createCatArray: function() {
-		var catList = [];
-		for(let i=1; i<=CAT_AMOUNT; i++){
-			catList.push(this.createCat(i));
-		}
-		return catList;
-	},
-	// Adds a click to the click count
-	addClick: function(cat) {
-		cat.clicks++;
-	}
+	]
 };
 
 var octopus = {
-	getCats: function() {
-		return model.createCatArray();
+	getCats: () => {
+		return model.cats;
 	},
-	addClick: (cat) => {
-		model.addClick(cat);
+	getCurrentCat: () => {
+		return model.currentCat;
 	},
-	// Hides all visible cats
-	hideCats: function() {
-		let visibleCats = document.querySelectorAll(".show");
-		let visibleCatsArray = Array.prototype.slice.call(visibleCats);
-		visibleCatsArray.forEach((cat) => {
-			cat.classList.remove("show");
-		});
+	setCurrentCat: (cat) => {
+		model.currentCat = cat;
 	},
-	attachDetailToButton: function(newCatButton, cat) {
-		detailView.attachDetail(newCatButton, cat);
-	},
-	init: function() {
-		listView.render();
+	addCount: () => {
+		model.currentCat.clickCount++;
 		detailView.render();
-	}
-};
-
-var listView = {
-	// Creates the html needed for a cat button
-	createCatButton: function(cat) {
-		let newCatButton = document.createElement("BUTTON");
-		newCatButton.innerHTML = "Cat "+cat.number;
-		octopus.attachDetailToButton(newCatButton, cat);
-		menu.appendChild(newCatButton);
 	},
-	// Creates a list of buttons
-	createButtonList: function() {
-		let cats = octopus.getCats();
-		for(cat of cats){
-			this.createCatButton(cat);
-		}
-	},
-	render: function() {
-		this.createButtonList();
+	init: () => {
+		model.currentCat = model.cats[0];
+		listView.init();
+		detailView.init();
 	}
 };
 
 var detailView = {
-	// Adds the detail view html for a cat
-	createCatView: function(cat) {
-		let newCatView = document.createElement("DIV");
-		newCatView.innerHTML = `<div id="cat${cat.number}"><h2>Cat ${cat.number}:<br \></h2><img src="${cat.url}" alt="cat pic"><p>Clicks: ${cat.clicks}</p></div>`;
-		newCatView.addEventListener("click", () => {
-			octopus.addClick(cat);
-			newCatView.querySelector("p").innerHTML = `Clicks: ${cat.clicks}`;
+	init: () => {
+		this.catElement = document.getElementById('cat');
+		this.catName = document.getElementById('cat-name');
+		this.catImage = document.getElementById('cat-image');
+		this.catCount = document.getElementById('cat-count');
+
+		// Adding click counts to the current cat
+		catImage.addEventListener('click', () => {
+			octopus.addCount();
 		});
-		newCatView.classList.add("hide");
-		container.appendChild(newCatView);
+
+		detailView.render();
 	},
-	// Attaches cat html to cat button
-	attachDetail: function(button, cat){
-		let catName = "cat"+cat.number;
-		button.addEventListener("click", (cat) => {	
-			octopus.hideCats();
-			let test = document.getElementById(catName);
-			test.parentNode.classList.toggle("show");
-		});
-	},
-	render: function() {
-		let cats = octopus.getCats();
-		cats.forEach((cat) => {
-			this.createCatView(cat);
-		});
+	render: () => {
+		// Updates the current cat's elements
+		let currentCat = octopus.getCurrentCat();
+		this.catName.textContent = currentCat.name;
+		this.catCount.textContent = currentCat.clickCount;
+		this.catImage.src = currentCat.url;
 	}
 };
+
+var listView = {
+	init: () => {
+		this.menu = document.getElementById('menu');
+
+		listView.render(); 
+	},
+	render: () => {
+		let cats = octopus.getCats();
+		this.menu.innerHTML = "";
+
+		for(let i=0; i<cats.length; i++){
+			let cat = cats[i];
+			let catButton = document.createElement('button');	
+			catButton.textContent = cat.name;
+
+			catButton.addEventListener('click', ((cat) => {
+				return () => {
+					octopus.setCurrentCat(cat);
+					detailView.render();
+				};
+			})(cat));
+
+			this.menu.appendChild(catButton);
+		};
+	}
+};
+
 octopus.init();
