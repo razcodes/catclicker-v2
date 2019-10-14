@@ -8,6 +8,7 @@ In order to run the website:
 
 ## What to expect
 Switch between cats by clicking the different cat buttons.
+Click the admin button to change each cat's attributes.
 Click the image to increase the click count.
 Each cat has it's own click count.
 Now click away.
